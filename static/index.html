@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gym & Diet Planner (Claude + Python)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="/static/style.css" rel="stylesheet" />
+</head>
+<body>
+  <main class="container">
+    <h1>Gym & Diet Planner</h1>
+    <form id="planner-form" class="controls">
+      <label>
+        Goal
+        <select name="goal" required>
+          <option value="weight_loss">Weight Loss</option>
+          <option value="strength">Strength</option>
+          <option value="hypertrophy">Hypertrophy</option>
+          <option value="yoga">Yoga</option>
+          <option value="general" selected>General Fitness</option>
+        </select>
+      </label>
+      <label>
+        Days / week
+        <select name="days_per_week" required>
+          <option>1</option><option>2</option><option>3</option>
+          <option selected>4</option>
+          <option>5</option><option>6</option>
+        </select>
+      </label>
+      <label>
+        Diet type
+        <select name="diet_type" required>
+          <option value="vegetarian" selected>Vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="non_veg">Non-Vegetarian</option>
+        </select>
+      </label>
+      <label>
+        Age
+        <input type="number" name="age" min="12" max="90" value="28" required />
+      </label>
+      <button id="generate-btn" type="submit">Generate Plan</button>
+    </form>
+
+    <section id="status"></section>
+
+    <div class="tabs">
+      <button class="tab active" data-target="#workout">Workout</button>
+      <button class="tab" data-target="#diet">Diet</button>
+    </div>
+
+    <section id="workout" class="panel active"></section>
+    <section id="diet" class="panel"></section>
+    <p id="notes" class="notes"></p>
+  </main>
+
+  <script>
+    // Tabs
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelector(btn.dataset.target).classList.add("active");
+      });
+    });
+
+    const form = document.getElementById("planner-form");
+    const statusEl = document.getElementById("status");
+    const workoutEl = document.getElementById("workout");
+    const dietEl = document.getElementById("diet");
+    const notesEl = document.getElementById("notes");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusEl.textContent = "Generating plan…";
+      workoutEl.innerHTML = "";
+      dietEl.innerHTML = "";
+      notesEl.textContent = "";
+
+      const formData = new FormData(form);
+      const payload = {
+        goal: formData.get("goal"),
+        days_per_week: Number(formData.get("days_per_week")),
+        diet_type: formData.get("diet_type"),
+        age: Number(formData.get("age")),
+      };
+
+      try {
+        const res = await fetch("/api/plan", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          throw new Error("Server error " + res.status);
+        }
+
+        const data = await res.json();
+        workoutEl.innerHTML = data.workout_html || "";
+        dietEl.innerHTML = data.diet_html || "";
+        notesEl.textContent = data.notes || "";
+
+        if (data.ai_error) {
+          statusEl.textContent = "Done (fallback used — AI validation issue).";
+        } else {
+          statusEl.textContent = "Done.";
+        }
+      } catch (err) {
+        statusEl.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
