@@ -10,6 +10,8 @@ class Exercise(BaseModel):
     reps: str  # "5", "8-12", "45s"
     # NOTE: Optional so yoga/flows can use None. If provided, must be >=15 (after normalization).
     rest_sec: Optional[int] = Field(default=None, ge=15, le=240)
+    video_url: Optional[str] = None
+    form_tips: Optional[str] = None
 
     @field_validator("rest_sec", mode="before")
     @classmethod

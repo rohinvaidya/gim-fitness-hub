@@ -5,7 +5,8 @@ Schema:
 {
  "workout_plan":[
    {"day":"Monday|Tuesday|...|Sunday","focus":"string",
-    "exercises":[{"name":"string","sets":1-6,"reps":"e.g., '5', '8-12', '45s'", "rest_sec":null|15-240}]}
+    "exercises":[{"name":"string","sets":1-6,"reps":"e.g., '5', '8-12', '45s'", "rest_sec":null|15-240,
+                  "video_url":"YouTube URL to exercise demo (optional)", "form_tips":"brief form cue (optional)"}]}
  ],
  "diet_plan":[
    {"day":"Monday|...|Sunday",
@@ -29,8 +30,13 @@ Rules:
 
 REST RULE:
 - `rest_sec` must be either `null` (no explicit rest, e.g., yoga/continuous circuits) or an integer in [15, 240].
-- NEVER use 0 for `rest_sec`. For flows/circuits with “no rest,” set `rest_sec` to null.
+- NEVER use 0 for `rest_sec`. For flows/circuits with "no rest," set `rest_sec` to null.
 - Typical ranges: strength/hypertrophy 60–180s; circuits/weight_loss 15–60s.
+
+VIDEO & FORM TIPS:
+- For each exercise, include a `video_url` linking to a YouTube demonstration video when possible.
+- Include `form_tips` with 1-2 sentence cues for proper form and common mistakes to avoid.
+- If no video is available, set `video_url` to null. If no form tips, set `form_tips` to null.
 
 OUTPUT:
 - Output ONLY JSON. No prose, no markdown.

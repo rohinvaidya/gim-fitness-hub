@@ -45,3 +45,31 @@ button { cursor: pointer; border-color: var(--accent); }
 .plan-table td.focus { width: 220px; }
 ul.ex-list, ul.meal-list { margin: 0; padding-left: 18px; }
 .notes { color: var(--muted); margin-top: 10px; }
+
+/* Video link styling */
+.video-link {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.video-link:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* Form tips styling */
+.form-tips {
+  font-size: 12px;
+  color: #a8b8cc;
+  font-style: italic;
+  margin-top: 4px;
+  padding-left: 4px;
+  line-height: 1.4;
+}

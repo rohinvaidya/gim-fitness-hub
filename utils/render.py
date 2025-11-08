@@ -10,7 +10,16 @@ def _render_workout_row(day):
         reps = escape(str(ex.get("reps","")))
         rest = ex.get("rest_sec", None)
         rest_str = f" — rest {rest}s" if rest else ""
-        ex_html.append(f"<li>{name}: {sets} × {reps}{rest_str}</li>")
+
+        # Add video link if available
+        video_url = ex.get("video_url")
+        video_link = f' <a href="{escape(str(video_url))}" target="_blank" class="video-link">📹 Video</a>' if video_url else ""
+
+        # Add form tips if available
+        form_tips = ex.get("form_tips")
+        tips_html = f'<div class="form-tips">💡 {escape(str(form_tips))}</div>' if form_tips else ""
+
+        ex_html.append(f"<li>{name}: {sets} × {reps}{rest_str}{video_link}{tips_html}</li>")
     return f"""
       <tr>
         <td class="day">{escape(day.get("day",""))}</td>

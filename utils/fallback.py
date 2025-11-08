@@ -1,4 +1,24 @@
+import json
+import os
 from .schema import DAYS
+
+# Load exercise database with video URLs and form tips
+_EXERCISE_DB = {}
+try:
+    db_path = os.path.join(os.path.dirname(__file__), "exercise_database.json")
+    with open(db_path, "r") as f:
+        _EXERCISE_DB = json.load(f)
+except Exception:
+    pass  # Fallback to empty dict if database not found
+
+def _get_exercise_metadata(exercise_name: str):
+    """Get video URL and form tips for an exercise from the database."""
+    if exercise_name in _EXERCISE_DB:
+        return {
+            "video_url": _EXERCISE_DB[exercise_name].get("video_url"),
+            "form_tips": _EXERCISE_DB[exercise_name].get("form_tips")
+        }
+    return {"video_url": None, "form_tips": None}
 
 def _pick_training_indices(days_per_week: int):
     # Simple, readable schedules
@@ -111,18 +131,42 @@ def generate_fallback_plan(goal: str, days_per_week: int, diet_type: str, age: i
             for name in ex_trimmed:
                 sets = 4 if goal == "strength" else (3 if goal in ("hypertrophy","general") else 3)
                 rest_sec = (rest_high + rest_low)//2 if goal in ("strength","hypertrophy") else 45
+                metadata = _get_exercise_metadata(name)
                 if goal == "yoga":
                     # yoga as duration only
-                    exercises.append({"name": name, "sets": 1, "reps": reps, "rest_sec": None})
+                    exercises.append({
+                        "name": name,
+                        "sets": 1,
+                        "reps": reps,
+                        "rest_sec": None,
+                        "video_url": metadata["video_url"],
+                        "form_tips": metadata["form_tips"]
+                    })
                 else:
-                    exercises.append({"name": name, "sets": sets, "reps": reps, "rest_sec": rest_sec})
+                    exercises.append({
+                        "name": name,
+                        "sets": sets,
+                        "reps": reps,
+                        "rest_sec": rest_sec,
+                        "video_url": metadata["video_url"],
+                        "form_tips": metadata["form_tips"]
+                    })
             workout_plan.append({"day": day, "focus": focus, "exercises": exercises})
         else:
             # rest / active recovery
+            rest_name = "Walk 30–45 min or gentle mobility"
+            rest_metadata = _get_exercise_metadata(rest_name)
             workout_plan.append({
                 "day": day,
                 "focus": "Rest/Active Recovery",
-                "exercises": [{"name": "Walk 30–45 min or gentle mobility", "sets": 1, "reps": "30-45m", "rest_sec": None}]
+                "exercises": [{
+                    "name": rest_name,
+                    "sets": 1,
+                    "reps": "30-45m",
+                    "rest_sec": None,
+                    "video_url": rest_metadata["video_url"],
+                    "form_tips": rest_metadata["form_tips"]
+                }]
             })
 
         # Diet: 4 items per day
