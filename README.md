@@ -8,6 +8,11 @@ One-page app that generates a **7-day workout** and **diet plan** from:
 
 Backend calls **Claude (Haiku by default)** once and returns **tabular HTML**. If the AI response is invalid/unavailable, a **rule-based fallback** instantly generates a decent plan.
 
+## Team
+Sanskar Vidyarthi
+Rohin Vaidya
+Andy Diep
+
 ## Quickstart
 
 ```bash
